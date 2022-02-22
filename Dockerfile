@@ -1,8 +1,14 @@
 #syntax=docker/dockerfile:1
 FROM node:16.13.2-alpine3.15
-WORKDIR /code
-COPY package*.json ./
-RUN npm install
-COPY ./src .
-EXPOSE 3000
-CMD ["npm", "run", "start"]
+WORKDIR /app
+COPY package.json .
+
+ARG NODE_ENV
+RUN if [ "$NODE_ENV" = "development" ]; \
+        then npm install; \
+        else npm install --only=production; \
+        fi
+
+COPY . ./
+EXPOSE $PORT
+CMD ["npm", "run", "dev"]
